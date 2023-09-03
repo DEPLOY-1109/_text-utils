@@ -18,7 +18,10 @@ function App() {
     })
 
     setTimeout(() => {
-      setAlert(null)
+      setAlert(null);
+      let myAlert = document.getElementById('myAlert');
+      console.log(myAlert);      
+      
     }, 2000)
   }
 

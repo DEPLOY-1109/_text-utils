@@ -3,10 +3,10 @@ import { useState } from 'react';
 
 export default function TextForm(props) {
     // const [text, setText] = useState("");    
-    const [text, setText] = useState(localStorage.getItem('saveTxt'));    
-    if(localStorage.getItem('saveTxt') === null)
+    const [text, setText] = useState(localStorage.getItem('saveTxt'));
+    if (localStorage.getItem('saveTxt') === null)
         localStorage.setItem('saveTxt', "");
-    
+
     // 🗃️saving to local storage -------------------
     const saveToLocalStorage = (value) => {
         localStorage.setItem('saveTxt', value);
@@ -58,17 +58,17 @@ export default function TextForm(props) {
         if (text !== "") {
             let str = text;
             // console.log(typeof (str));
-            
+
             let invert_Str = "";
             for (let i = 0; i < str.length; i++) {
                 let ch = str[i];
                 console.log(ch);
                 // console.log(ch.toUpperCase());
-                
+
                 // if (ch === ch.toUpperCase()) {
-                    //     console.log(ch, " is upper case");
-                    // }
-                    // else if(ch === ch.toLowerCase()) {
+                //     console.log(ch, " is upper case");
+                // }
+                // else if(ch === ch.toLowerCase()) {
                 //     console.log(ch, " is lower case");                
                 // }
 
@@ -86,7 +86,7 @@ export default function TextForm(props) {
     }
     const handleAlternatingClick = () => {
         let alterTxt = "";
-        
+
         for (let i = 0; i < text.length; i++) {
             if (i % 2 === 0) {
                 alterTxt += text.charAt(i).toLowerCase();
@@ -107,10 +107,26 @@ export default function TextForm(props) {
         saveToLocalStorage(newTxt);
         props.showAlert("Text is aLtErNaTeD", "secondary");
     }
-    
+    const handleCopy = () => {
+        console.log("Copy to CLIPBOARD: ", text);  
+        console.log("window.isSecureContext: ", window.isSecureContext);  
+        console.log("navigator.clipboard :", navigator.clipboard);  
+        
+        if (window.isSecureContext && navigator.clipboard) {            
+            navigator.clipboard.writeText(text);
+            props.showAlert("Text Copied to Clipboard", "success");
+        }
+        else {
+            props.showAlert("Unable to Copy due to Unsecure Connection !", "danger");            
+        }
+
+        // console.log("Copy to CLIPBOARD, n: ", n);        
+    }
+
     // 🔄️ word count and character count --------------------------------
     let wordCount;
-    wordCount = text.split(' ').length;
+    // wordCount = text.split(' ').length;
+    wordCount = text.split(/\s+/).filter((element) => { return element.length !== 0 }).length;
     // console.log(text.split(' '));
     // console.log(wordCount);
 
@@ -118,7 +134,7 @@ export default function TextForm(props) {
     return (
         <>
             <div className={`main-container p-4 text-${props.drk_mode === 'light' ? 'dark' : 'light'} bg-${props.drk_mode}`} style={{
-                height: "80vh"
+                height: "92vh"
             }}>
                 <div className='container my-1 p-4'>
                     <div className='mb-2'>
@@ -128,19 +144,19 @@ export default function TextForm(props) {
 
                     {/* 🆗 Buttons -------------------- */}
                     <div className='d-flex flex-wrap justify-content-between align-content-around'  >
-                        <button className="btn btn-danger" onClick={handleClearClick} data-toggle="tooltip" title="Clear Input Field" >Clear All</button>
-                        <button className="btn btn-primary" onClick={handleUpClick}>CONVERT TO UPPERCASE</button>
-                        <button className="btn btn-success" onClick={handleLoClick}>convert to lowercase</button>
-
-                        <button className="btn btn-info" onClick={handleInverseClick}>iNVERSE cASE</button>
-                        <button className="btn btn-success" onClick={handleCapitalizedClick}>Capitalized Case</button>
-                        <button className="btn btn-primary" onClick={handleAlternatingClick} >aLtErNaTiNg cAsE</button>
-                        <button className="btn btn-success" disabled onClick={handleTitleClick} data-toggle="tooltip" title="Capitalization of the first word, and all other words, except for articles, prepositions, and conjunctions.This is an Example of Title Case in Use." >Title Case</button>
+                        <button disabled={text.length===0} className="btn btn-danger" onClick={handleClearClick} data-toggle="tooltip" title="Clear Input Field" >Clear All</button>
+                        <button disabled={text.length===0} className="btn btn-primary" onClick={handleUpClick}>CONVERT TO UPPERCASE</button>
+                        <button disabled={text.length===0} className="btn btn-success" onClick={handleLoClick}>convert to lowercase</button>
+                        <button disabled={text.length===0} className="btn btn-info" onClick={handleInverseClick}>iNVERSE cASE</button>
+                        <button disabled={text.length===0} className="btn btn-success" onClick={handleCapitalizedClick}>Capitalized Case</button>
+                        <button disabled={text.length===0} className="btn btn-primary" onClick={handleAlternatingClick} >aLtErNaTiNg cAsE</button>
+                        <button disabled={text.length===0} className="btn btn-success" onClick={handleCopy} >Click to COPY</button>
+                        <button disabled className="btn btn-success"  onClick={handleTitleClick} data-toggle="tooltip" title="Capitalization of the first word, and all other words, except for articles, prepositions, and conjunctions.This is an Example of Title Case in Use." >Title Case</button>
                     </div>
                 </div>
                 <div className="container my-2">
                     <h3>Text Summay</h3>
-                    <p>{wordCount - 1} words & {characterCount} characters</p>
+                    <p>{wordCount} words & {characterCount} characters</p>
                     <p>Time to read the Whole Content : {0.2 * wordCount} seconds</p>
                     <h3>Preview</h3>
                     {text}
